@@ -12,4 +12,5 @@ struct CityModel: Codable {
     let lat: Float
     let lon: Float
     let country: String
+    let state: String?
 }

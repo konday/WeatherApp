@@ -8,14 +8,12 @@
 import Foundation
 
 struct SearchModel: Codable {
-    
-    
-    
     let city: String
     let time: String
     let description: String
     let temperature: Int
     let highTemperature: Int
     let lowTemperature: Int
+    let feelTemperature: Int
     var hourlyWeather: [String] = []
 }

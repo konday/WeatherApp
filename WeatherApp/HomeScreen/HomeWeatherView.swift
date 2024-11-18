@@ -1,6 +1,12 @@
 import UIKit
 
+protocol HomeWeatherViewDelegate: AnyObject {
+    func didTapInfoButton()
+}
+
 class HomeWeatherView: UIView {
+    
+    weak var delegate: HomeWeatherViewDelegate?
     
     private var cityNameLabel: UILabel = {
         let name = UILabel()
@@ -73,6 +79,7 @@ class HomeWeatherView: UIView {
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = UIFont(name: "Inter", size: 16)
         button.layer.cornerRadius = 20
+        button.addTarget(self, action: #selector(infoButtonTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -109,14 +116,14 @@ class HomeWeatherView: UIView {
         addSubview(weeklyView)
     }
     
-    func setupData() {
-            cityNameLabel.text = "New York"
-            cityRegionLabel.text = "NY, USA"
-            cityTimeLabel.text = "10:00 AM"
-            weatherIconImageView.image = UIImage(named: "Sunny")
-            descriptionLabel.text = "Windy"
-            tempLabel.text = "27"
-            tempTypeLabel.text = "°C"
+    func setupData(model: HomeModel) {
+        cityNameLabel.text = model.name
+        cityRegionLabel.text = model.Region
+        cityTimeLabel.text = model.Time
+        weatherIconImageView.image = UIImage(named: "\(model.Icon)")
+        descriptionLabel.text = model.description
+        tempLabel.text = String(model.temp)
+        tempTypeLabel.text = model.tempType
         }
     
     private func setupConstraints() {
@@ -150,5 +157,8 @@ class HomeWeatherView: UIView {
             weeklyView.centerXAnchor.constraint(equalTo: centerXAnchor),
             weeklyView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -24)
         ])
+    }
+    @objc private func infoButtonTapped() {
+        delegate?.didTapInfoButton()
     }
 }
