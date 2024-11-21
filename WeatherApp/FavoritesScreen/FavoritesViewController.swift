@@ -46,7 +46,7 @@ class FavoritesViewController: UIViewController, UISearchBarDelegate, UITableVie
     
     func searchBar(_ searchBar: UISearchBar, textDidChange text: String) {
         searchText = text
-        suggestions = favoritesModel.searchedData(data: searchText)
+        favoritesModel.searchedData(data: searchText)
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
@@ -57,12 +57,25 @@ class FavoritesViewController: UIViewController, UISearchBarDelegate, UITableVie
         favoritesView.suggestionsTableView.reloadData()
     }
     
+    private func highlightText(fullText: String, query: String) -> NSAttributedString {
+        let attributedText = NSMutableAttributedString(string: fullText)
+        let lowercasedText = fullText.lowercased()
+        let lowercasedQuery = query.lowercased()
+        
+        if let range = lowercasedText.range(of: lowercasedQuery) {
+            let nsRange = NSRange(range, in: fullText)
+            attributedText.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: 17), range: nsRange)
+        }
+        return attributedText
+    }
+    
     // MARK: - UITableViewDataSource
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if tableView == favoritesView.suggestionsTableView {
             return suggestions.count
         } else {
+            favoritesModel.loadFavoriteCities()
             return favoritesModel.favoriteCities.count
         }
     }
@@ -80,16 +93,8 @@ class FavoritesViewController: UIViewController, UISearchBarDelegate, UITableVie
             let city = suggestions[indexPath.row]
             
             let fullText = "\(city.name), \(city.state ?? " "), \(city.country)"
+            cell.textLabel?.attributedText = highlightText(fullText: fullText, query: searchText)
             
-            let attributedText = NSMutableAttributedString(string: fullText)
-
-            if let range = fullText.lowercased().range(of: searchText.lowercased()) {
-                let nsRange = NSRange(range, in: fullText)
-                
-                attributedText.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: 17), range: nsRange)
-            }
-            
-            cell.textLabel?.attributedText = attributedText
             return cell
         }
     }
@@ -109,7 +114,7 @@ class FavoritesViewController: UIViewController, UISearchBarDelegate, UITableVie
         if tableView == favoritesView.favoritesTableView {
             let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { [weak self] _, _, completionHandler in
                 guard let self = self else { return }
-                self.favoritesModel.favoriteCities.remove(at: indexPath.row)
+                self.favoritesModel.removeFavorites(index: indexPath.row)
                 tableView.deleteRows(at: [indexPath], with: .automatic)
                 completionHandler(true)
             }
@@ -133,7 +138,6 @@ class FavoritesViewController: UIViewController, UISearchBarDelegate, UITableVie
 
 extension FavoritesViewController: FavoritesViewModelDelegate {
     func dataLoaded() {
-        print("update")
         suggestions = favoritesModel.getSuggestions()
         favoritesView.suggestionsTableView.isHidden = suggestions.isEmpty
         favoritesView.suggestionsTableView.reloadData()

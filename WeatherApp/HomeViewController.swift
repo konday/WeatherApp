@@ -11,7 +11,7 @@ class HomeViewController: UIViewController, UIPageViewControllerDataSource, UIPa
     
     private let cities: [HomeModel] = [
         HomeModel(name: "New York", Region: "US, NY", Time: "10:30 PM", Icon: "Sunny", description: "Sunny", temp: 24, tempType: "°C", feelTemperature: 23),
-        HomeModel(name: "London", Region: "UK", Time: "3:30 AM", Icon: "Sunny", description: "Sunny", temp: 18, tempType: "°C", feelTemperature: 23),
+        HomeModel(name: "London", Region: "UK", Time: "3:30 AM", Icon: "Rain", description: "Rain", temp: 18, tempType: "°C", feelTemperature: 23),
         HomeModel(name: "Paris", Region: "FR", Time: "4:30 AM", Icon: "Sunny", description: "Sunny", temp: 20, tempType: "°C", feelTemperature: 21)
     ]
     
@@ -84,11 +84,19 @@ class HomeViewController: UIViewController, UIPageViewControllerDataSource, UIPa
     }
     
     private func setupConstraints() {
+        if UIScreen.main.bounds.width <= 375 {
+            setupConstraintsForRegularScreens(high: 52)
+        } else {
+            setupConstraintsForRegularScreens(high: 76)
+        }
+    }
+    
+    private func setupConstraintsForRegularScreens(high: CGFloat) {
         NSLayoutConstraint.activate([
             footerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             footerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             footerView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            footerView.heightAnchor.constraint(equalToConstant: 76),
+            footerView.heightAnchor.constraint(equalToConstant: high),
             
             setupPageController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             setupPageController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
@@ -100,15 +108,11 @@ class HomeViewController: UIViewController, UIPageViewControllerDataSource, UIPa
     // MARK: - UIPageViewControllerDataSource
     
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
-        var index = currentPage
-        index -= 1
-        return viewControllerAtIndex(index: index)
+        return viewControllerAtIndex(index: currentPage - 1)
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
-        var index = currentPage
-        index += 1
-        return viewControllerAtIndex(index: index)
+        return viewControllerAtIndex(index: currentPage + 1)
     }
     
     // MARK: - UIPageViewControllerDelegate
@@ -133,8 +137,6 @@ class HomeViewController: UIViewController, UIPageViewControllerDataSource, UIPa
     }
     
     @objc private func searchAction() {
-        //let networkConnection = Networkconnect()
-        //let viewModel = SearchViewModel(networkconnect: networkConnection)
         let networkConnection = Networkconnect()
         let viewModel = FavoritesViewModel(networkconnect: networkConnection)
         let favoritesViewController = FavoritesViewController(favoritesModel: viewModel)

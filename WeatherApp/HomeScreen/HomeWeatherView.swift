@@ -84,8 +84,8 @@ class HomeWeatherView: UIView {
         return button
     }()
     
-    private lazy var weeklyView: weeklyWeatherView = {
-        let weeklyView = weeklyWeatherView()
+    private lazy var weeklyView: WeeklyWeatherView = {
+        let weeklyView = WeeklyWeatherView()
         weeklyView.translatesAutoresizingMaskIntoConstraints = false
         return weeklyView
     }()
@@ -127,6 +127,14 @@ class HomeWeatherView: UIView {
         }
     
     private func setupConstraints() {
+        if UIScreen.main.bounds.width <= 375 { // Проверка для маленьких экранов, например iPhone SE
+            setupConstraintsForSmallScreens()
+        } else {
+            setupConstraintsForRegularScreens()
+        }
+    }
+    
+    private func setupConstraintsForRegularScreens() {
         NSLayoutConstraint.activate([
             cityNameLabel.topAnchor.constraint(equalTo: topAnchor, constant: 36),
             cityNameLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
@@ -154,10 +162,47 @@ class HomeWeatherView: UIView {
             infoButton.widthAnchor.constraint(equalToConstant: 120),
             infoButton.heightAnchor.constraint(equalToConstant: 43),
             
+            weeklyView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
+            weeklyView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
             weeklyView.centerXAnchor.constraint(equalTo: centerXAnchor),
             weeklyView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -24)
         ])
     }
+    
+    private func setupConstraintsForSmallScreens() {
+        NSLayoutConstraint.activate([
+            cityNameLabel.topAnchor.constraint(equalTo: topAnchor, constant: 20),
+            cityNameLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
+            
+            cityRegionLabel.topAnchor.constraint(equalTo: cityNameLabel.bottomAnchor, constant: 4),
+            cityRegionLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
+            
+            cityTimeLabel.topAnchor.constraint(equalTo: cityRegionLabel.bottomAnchor, constant: 4),
+            cityTimeLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
+            
+            weatherIconImageView.topAnchor.constraint(equalTo: cityTimeLabel.bottomAnchor, constant: 16),
+            weatherIconImageView.centerXAnchor.constraint(equalTo: centerXAnchor),
+            weatherIconImageView.widthAnchor.constraint(equalToConstant: 64),
+            weatherIconImageView.heightAnchor.constraint(equalToConstant: 64),
+            
+            descriptionLabel.topAnchor.constraint(equalTo: weatherIconImageView.bottomAnchor, constant: 4),
+            descriptionLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
+            
+            temperatureStackView.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 16),
+            temperatureStackView.centerXAnchor.constraint(equalTo: centerXAnchor),
+            
+            infoButton.topAnchor.constraint(equalTo: temperatureStackView.bottomAnchor, constant: 40),
+            infoButton.centerXAnchor.constraint(equalTo: centerXAnchor),
+            infoButton.widthAnchor.constraint(equalToConstant: 120),
+            infoButton.heightAnchor.constraint(equalToConstant: 43),
+            
+            weeklyView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
+            weeklyView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
+            weeklyView.centerXAnchor.constraint(equalTo: centerXAnchor),
+            weeklyView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -12)
+        ])
+    }
+    
     @objc private func infoButtonTapped() {
         delegate?.didTapInfoButton()
     }

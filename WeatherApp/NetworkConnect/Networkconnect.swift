@@ -50,4 +50,34 @@ class Networkconnect {
         
         task.resume()
     }
+    
+    func currentWeather(data: CityModel?) {
+        
+        if let cityInfo = data {
+            print("data complete current")
+            let urlString = "https://api.openweathermap.org/data/2.5/weather?lat=\(cityInfo.lat)&lon=\(cityInfo.lon)&appid=\(apiKey)"
+            guard let url = URL(string: urlString) else {
+                print("error URL")
+                return
+            }
+            let currentTask = URLSession.shared.dataTask(with: url) { data, response, error in
+                if let error = error {
+                    print("Erorr task current")
+                }
+                if let data = data {
+                    do {
+                        let currentJSON = try JSONDecoder().decode(CurrentModel.self, from: data)
+                        print("Current \(currentJSON)")
+                    } catch {
+                        print("error JSON current")
+                    }
+                }
+            }
+            currentTask.resume()
+        } else {
+            print("data error current")
+        }
+        
+    }
+    
 }

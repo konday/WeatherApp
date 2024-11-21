@@ -7,7 +7,7 @@
 
 import UIKit
 
-class weeklyWeatherView: UIView {
+class WeeklyWeatherView: UIView {
     
     private let days = ["S", "M", "T", "W", "T", "F", "S"]
     private let temperatures = ["23°", "24°", "21°", "22°", "23°", "25°", "26°"]
@@ -17,7 +17,6 @@ class weeklyWeatherView: UIView {
         stackView.axis = .horizontal
         stackView.alignment = .center
         stackView.distribution = .equalSpacing
-        stackView.spacing = 28
         stackView.translatesAutoresizingMaskIntoConstraints = false
         return stackView
     }()
